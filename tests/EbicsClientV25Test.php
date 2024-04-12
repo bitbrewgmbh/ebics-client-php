@@ -1013,6 +1013,64 @@ class EbicsClientV25Test extends AbstractEbicsTestCase
     /**
      * @dataProvider serversDataProvider
      *
+     * @group CDZ
+     *
+     * @param int $credentialsId
+     * @param array $codes
+     * @param X509GeneratorInterface|null $x509Generator
+     *
+     * @covers
+     */
+    public function testCDZ(int $credentialsId, array $codes, X509GeneratorInterface $x509Generator = null)
+    {
+        $client = $this->setupClientV25($credentialsId, $x509Generator, $codes['CDZ']['fake']);
+
+        $this->assertExceptionCode($codes['CDZ']['code']);
+        $cdz = $client->CDZ();
+
+        $responseHandler = $client->getResponseHandler();
+        $code = $responseHandler->retrieveH00XReturnCode($cdz->getTransaction()->getLastSegment()->getResponse());
+        $reportText = $responseHandler->retrieveH00XReportText($cdz->getTransaction()->getLastSegment()->getResponse());
+        $this->assertResponseOk($code, $reportText);
+
+        $code = $responseHandler->retrieveH00XReturnCode($cdz->getTransaction()->getReceipt());
+        $reportText = $responseHandler->retrieveH00XReportText($cdz->getTransaction()->getReceipt());
+
+        $this->assertResponseDone($code, $reportText);
+    }
+
+    /**
+     * @dataProvider serversDataProvider
+     *
+     * @group CIZ
+     *
+     * @param int $credentialsId
+     * @param array $codes
+     * @param X509GeneratorInterface|null $x509Generator
+     *
+     * @covers
+     */
+    public function testCIZ(int $credentialsId, array $codes, X509GeneratorInterface $x509Generator = null)
+    {
+        $client = $this->setupClientV25($credentialsId, $x509Generator, $codes['CIZ']['fake']);
+
+        $this->assertExceptionCode($codes['CIZ']['code']);
+        $ciz = $client->CIZ();
+
+        $responseHandler = $client->getResponseHandler();
+        $code = $responseHandler->retrieveH00XReturnCode($ciz->getTransaction()->getLastSegment()->getResponse());
+        $reportText = $responseHandler->retrieveH00XReportText($ciz->getTransaction()->getLastSegment()->getResponse());
+        $this->assertResponseOk($code, $reportText);
+
+        $code = $responseHandler->retrieveH00XReturnCode($ciz->getTransaction()->getReceipt());
+        $reportText = $responseHandler->retrieveH00XReportText($ciz->getTransaction()->getReceipt());
+
+        $this->assertResponseDone($code, $reportText);
+    }
+
+    /**
+     * @dataProvider serversDataProvider
+     *
      * @group CRZ
      *
      * @param int $credentialsId
@@ -1088,6 +1146,8 @@ class EbicsClientV25Test extends AbstractEbicsTestCase
                     'HVE' => ['code' => '090003', 'fake' => false],
                     'HVD' => ['code' => '090003', 'fake' => false],
                     'HVT' => ['code' => '090003', 'fake' => false],
+                    'CDZ' => ['code' => '090003', 'fake' => false],
+                    'CIZ' => ['code' => '091005', 'fake' => false],
                     'CRZ' => ['code' => '090003', 'fake' => false],
                 ],
             ],
@@ -1134,6 +1194,8 @@ class EbicsClientV25Test extends AbstractEbicsTestCase
                     'HVE' => ['code' => '091006', 'fake' => false],
                     'HVD' => ['code' => '091006', 'fake' => false],
                     'HVT' => ['code' => '090006', 'fake' => false],
+                    'CDZ' => ['code' => '061002', 'fake' => false],
+                    'CIZ' => ['code' => '061002', 'fake' => false],
                     'CRZ' => ['code' => '061002', 'fake' => false],
                 ],
                 new WeBankX509Generator(),
@@ -1181,6 +1243,8 @@ class EbicsClientV25Test extends AbstractEbicsTestCase
                     'HVE' => ['code' => '090003', 'fake' => false],
                     'HVD' => ['code' => '090003', 'fake' => false],
                     'HVT' => ['code' => '090003', 'fake' => false],
+                    'CDZ' => ['code' => '090003', 'fake' => false],
+                    'CIZ' => ['code' => '091005', 'fake' => false],
                     'CRZ' => ['code' => '090003', 'fake' => false],
                 ],
             ],
@@ -1227,6 +1291,8 @@ class EbicsClientV25Test extends AbstractEbicsTestCase
                     'HVE' => ['code' => '090003', 'fake' => false],
                     'HVD' => ['code' => '090003', 'fake' => false],
                     'HVT' => ['code' => '090003', 'fake' => false],
+                    'CDZ' => ['code' => '090003', 'fake' => false],
+                    'CIZ' => ['code' => '091005', 'fake' => false],
                     'CRZ' => ['code' => '090003', 'fake' => false],
                 ],
             ],
@@ -1273,6 +1339,8 @@ class EbicsClientV25Test extends AbstractEbicsTestCase
                     'HVE' => ['code' => '090003', 'fake' => false],
                     'HVD' => ['code' => '090003', 'fake' => false],
                     'HVT' => ['code' => '090003', 'fake' => false],
+                    'CDZ' => ['code' => '090003', 'fake' => false],
+                    'CIZ' => ['code' => '091005', 'fake' => false],
                     'CRZ' => ['code' => '090003', 'fake' => false],
                 ],
             ],

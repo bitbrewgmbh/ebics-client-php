@@ -1027,6 +1027,52 @@ final class EbicsClient implements EbicsClientInterface
      *
      * @throws Exceptions\EbicsException
      */
+    public function CDZ(DateTimeInterface $dateTime = null): DownloadOrderResult
+    {
+        if (null === $dateTime) {
+            $dateTime = new DateTime();
+        }
+
+        $transaction = $this->downloadTransaction(
+            function ($segmentNumber, $isLastSegment) use ($dateTime) {
+                return $this->requestFactory->createCDZ(
+                    $dateTime,
+                    $segmentNumber,
+                    $isLastSegment
+                );
+            }
+        );
+
+        return $this->createDownloadOrderResult($transaction, 'xml');
+    }
+
+    /**
+     *
+     * @throws Exceptions\EbicsException
+     */
+    public function CIZ(DateTimeInterface $dateTime = null): DownloadOrderResult
+    {
+        if (null === $dateTime) {
+            $dateTime = new DateTime();
+        }
+
+        $transaction = $this->downloadTransaction(
+            function ($segmentNumber, $isLastSegment) use ($dateTime) {
+                return $this->requestFactory->createCIZ(
+                    $dateTime,
+                    $segmentNumber,
+                    $isLastSegment
+                );
+            }
+        );
+
+        return $this->createDownloadOrderResult($transaction, 'xml');
+    }
+
+    /**
+     *
+     * @throws Exceptions\EbicsException
+     */
     public function CRZ(DateTimeInterface $dateTime = null): DownloadOrderResult
     {
         if (null === $dateTime) {

@@ -1209,6 +1209,114 @@ abstract class RequestFactory
     /**
      * @throws EbicsException
      */
+    public function createCDZ(
+        DateTimeInterface $dateTime,
+        int $segmentNumber = null,
+        bool $isLastSegment = null
+    ): Request {
+        $context = (new RequestContext())
+            ->setBank($this->bank)
+            ->setUser($this->user)
+            ->setKeyRing($this->keyRing)
+            ->setDateTime($dateTime)
+            ->setSegmentNumber($segmentNumber)
+            ->setIsLastSegment($isLastSegment);
+
+        $request = $this
+            ->createRequestBuilderInstance()
+            ->addContainerSecured(function (XmlBuilder $builder) use ($context) {
+                $builder->addHeader(function (HeaderBuilder $builder) use ($context) {
+                    $builder->addStatic(function (StaticBuilder $builder) use ($context) {
+                        $builder
+                            ->addHostId($context->getBank()->getHostId())
+                            ->addRandomNonce()
+                            ->addTimestamp($context->getDateTime())
+                            ->addPartnerId($context->getUser()->getPartnerId())
+                            ->addUserId($context->getUser()->getUserId())
+                            ->addProduct('Ebics client PHP', 'de')
+                            ->addOrderDetails(function (OrderDetailsBuilder $orderDetailsBuilder) {
+                                $this
+                                    ->addOrderType($orderDetailsBuilder, 'CDZ')
+                                    ->addStandardOrderParams();
+                            })
+                            ->addBankPubKeyDigests(
+                                $context->getKeyRing()->getBankSignatureXVersion(),
+                                $this->digestResolver->digest($context->getKeyRing()->getBankSignatureX()),
+                                $context->getKeyRing()->getBankSignatureEVersion(),
+                                $this->digestResolver->digest($context->getKeyRing()->getBankSignatureE())
+                            )
+                            ->addSecurityMedium(StaticBuilder::SECURITY_MEDIUM_0000);
+                    })->addMutable(function (MutableBuilder $builder) use ($context) {
+                        $builder
+                            ->addTransactionPhase(MutableBuilder::PHASE_INITIALIZATION)
+                            ->addSegmentNumber($context->getSegmentNumber(), $context->getIsLastSegment());
+                    });
+                })->addBody();
+            })
+            ->popInstance();
+
+        $this->authSignatureHandler->handle($request);
+
+        return $request;
+    }
+
+    /**
+     * @throws EbicsException
+     */
+    public function createCIZ(
+        DateTimeInterface $dateTime,
+        int $segmentNumber = null,
+        bool $isLastSegment = null
+    ): Request {
+        $context = (new RequestContext())
+            ->setBank($this->bank)
+            ->setUser($this->user)
+            ->setKeyRing($this->keyRing)
+            ->setDateTime($dateTime)
+            ->setSegmentNumber($segmentNumber)
+            ->setIsLastSegment($isLastSegment);
+
+        $request = $this
+            ->createRequestBuilderInstance()
+            ->addContainerSecured(function (XmlBuilder $builder) use ($context) {
+                $builder->addHeader(function (HeaderBuilder $builder) use ($context) {
+                    $builder->addStatic(function (StaticBuilder $builder) use ($context) {
+                        $builder
+                            ->addHostId($context->getBank()->getHostId())
+                            ->addRandomNonce()
+                            ->addTimestamp($context->getDateTime())
+                            ->addPartnerId($context->getUser()->getPartnerId())
+                            ->addUserId($context->getUser()->getUserId())
+                            ->addProduct('Ebics client PHP', 'de')
+                            ->addOrderDetails(function (OrderDetailsBuilder $orderDetailsBuilder) {
+                                $this
+                                    ->addOrderType($orderDetailsBuilder, 'CIZ')
+                                    ->addStandardOrderParams();
+                            })
+                            ->addBankPubKeyDigests(
+                                $context->getKeyRing()->getBankSignatureXVersion(),
+                                $this->digestResolver->digest($context->getKeyRing()->getBankSignatureX()),
+                                $context->getKeyRing()->getBankSignatureEVersion(),
+                                $this->digestResolver->digest($context->getKeyRing()->getBankSignatureE())
+                            )
+                            ->addSecurityMedium(StaticBuilder::SECURITY_MEDIUM_0000);
+                    })->addMutable(function (MutableBuilder $builder) use ($context) {
+                        $builder
+                            ->addTransactionPhase(MutableBuilder::PHASE_INITIALIZATION)
+                            ->addSegmentNumber($context->getSegmentNumber(), $context->getIsLastSegment());
+                    });
+                })->addBody();
+            })
+            ->popInstance();
+
+        $this->authSignatureHandler->handle($request);
+
+        return $request;
+    }
+
+    /**
+     * @throws EbicsException
+     */
     public function createCRZ(
         DateTimeInterface $dateTime,
         int $segmentNumber = null,
