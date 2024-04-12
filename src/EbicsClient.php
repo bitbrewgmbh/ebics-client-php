@@ -1024,6 +1024,29 @@ final class EbicsClient implements EbicsClientInterface
     }
 
     /**
+     *
+     * @throws Exceptions\EbicsException
+     */
+    public function CRZ(DateTimeInterface $dateTime = null): DownloadOrderResult
+    {
+        if (null === $dateTime) {
+            $dateTime = new DateTime();
+        }
+
+        $transaction = $this->downloadTransaction(
+            function ($segmentNumber, $isLastSegment) use ($dateTime) {
+                return $this->requestFactory->createCRZ(
+                    $dateTime,
+                    $segmentNumber,
+                    $isLastSegment
+                );
+            }
+        );
+
+        return $this->createDownloadOrderResult($transaction, 'xml');
+    }
+
+    /**
      * Mark download or upload transaction as receipt or not.
      *
      * @throws EbicsException
